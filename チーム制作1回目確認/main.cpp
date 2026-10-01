@@ -1,7 +1,7 @@
 #include <Novice.h>
 #include <Windows.h>
 
-const char kWindowTitle[] = "チーム制作1回目";
+const char kWindowTitle[] = "チーム制作1回目1129班";
 
 #pragma region 構造体
 struct Vector2 {
@@ -70,7 +70,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	const int kTapIntervalMax = 10;  // 連打とみなす許容間隔フレーム数（約0.16秒）
 #pragma endregion
 
-	int bg = Novice::LoadTexture("./credit.png");
+	int bg = Novice::LoadTexture("./background_tentative.png");
 	const int kBgWidth = 1920; // 画像の横幅（解像度に合わせて数値を変更してください）
 
 	// キー入力結果を受け取る箱
@@ -184,18 +184,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// ↓描画処理ここから
 		///
 #pragma region 背景・地面の描画（ワールドスクロール）
+			// 背景画像のループスクロール処理
+			// カメラ座標を元にスクロールオフセット（0〜kBgWidth）を計算
+			int bgOffsetX = static_cast<int>(camera.pos.x) % kBgWidth;
 
-		// 背景画像のループスクロール処理
-		// カメラ座標を元にスクロールオフセット（0〜kBgWidth）を計算
-		int bgOffsetX = static_cast<int>(camera.pos.x) % kBgWidth;
+			// 画面を埋めるために2枚並べて描画
+			Novice::DrawSprite(-bgOffsetX, 0, bg, 1.0f, 1.0f, 0.0f, 0xffffffff);
+			Novice::DrawSprite(-bgOffsetX + kBgWidth, 0, bg, 1.0f, 1.0f, 0.0f, 0xffffffff);
 
-		// 画面を埋めるために2枚並べて描画
-		Novice::DrawSprite(-bgOffsetX, 0, bg, 1.0f, 1.0f, 0.0f, 0xffffffff);
-		Novice::DrawSprite(-bgOffsetX + kBgWidth, 0, bg, 1.0f, 1.0f, 0.0f, 0xffffffff);
-
-		// 地面ラインの描画（Y = 0 の位置）
-		int screenGroundY = static_cast<int>(kGroundY * -1 + 700);
-		Novice::DrawLine(0, screenGroundY + 100, screenWidth, screenGroundY + 100, 0x888888ff);
+			// 地面ラインの描画（Y = 0 の位置）
+			int screenGroundY = static_cast<int>(kGroundY * -1 + 700);
+			Novice::DrawLine(0, screenGroundY + 100, screenWidth, screenGroundY + 100, 0x888888ff);
+		
 #pragma endregion
 
 #pragma region プレイヤーの描画
