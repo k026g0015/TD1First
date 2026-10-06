@@ -20,7 +20,7 @@
     <ClCompile Include="C:\KamataEngine\Adapter\Novice.cpp">
       <Filter>KamataEngine\Adapter</Filter>
     </ClCompile>
-    <ClCompile Include="player.cpp">
+    <ClCompile Include="Player.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
     <ClCompile Include="Background.cpp">
@@ -111,6 +111,5 @@
     </ClInclude>
     <ClInclude Include="player.h" />
     <ClInclude Include="scene.h" />
-    <ClInclude Include="Background.h" />
   </ItemGroup>
 </Project>

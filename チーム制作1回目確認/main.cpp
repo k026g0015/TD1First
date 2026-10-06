@@ -6,6 +6,7 @@
 #include <time.h>
 #include "player.h"
 #include "scene.h"
+
 const char kWindowTitle[] = "チーム制作1回目1129班";
 // Windowsアプリでのエントリーポイント(main関数
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -24,33 +25,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE); // ウィンドウ枠を削除
 	SetWindowPos(hwnd, HWND_TOP, 0, 0, screenWidth, screenHeight, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 #pragma endregion
-#pragma region 変数の宣言
-	// プレイヤー
-	Player player = {
-		{ 100.0f, 0.0f }, // 座標
-		{ 0.0f, 0.0f },   // 速度
-		true              // 接地フラグ
-	};
-	// カメラ
-	Camera camera = {
-		{ 0.0f, 0.0f }    // カメラの初期座標
-	};
-	// 移動・重力パラメータ
-	const float kNormalSpeed = 12.0f;      // 通常速度
-	const float kBoostSpeed = 25.0f;       // スペース長押し時の加速速度
-	const float kGravity = 1.2f;           // 重力加速度
-	const float kGroundY = 0.0f;           // 地面の高さ
-	// ★入力状態管理変数（ここで定義）
-	KeyInputState inputState = { 0, 0, 0 };
-	// ★ジャンプパラメータ（ここで定義）
-	JumpParams jumpParams = {
-		16.0f, // baseJumpPower
-		6.0f,  // jumpAddPower
-		40.0f, // maxJumpPower
-		12,    // holdThreshold
-		10     // tapIntervalMax
-	};
-#pragma endregion
+
 	int bg = Novice::LoadTexture("./background_tentative.png");
 	const int kBgWidth = 1920; // 画像の横幅（解像度に合わせて数値を変更してください
 	// キー入力結果を受け取る箱
@@ -145,10 +120,31 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			const int targetKey = DIK_SPACE;
 			// --- 連打・長押しの判定ロジック ---
 			bool isDash = false;
-			float jumpPowerToApply = 0.0f; // 今回発動するジャンプ力
-			UpdateKeyActionInput(keys, preKeys, targetKey, player, inputState, jumpParams, isDash, jumpPowerToApply);
-			// --- 移動・ジャンプ処理 ---
-			PlayerMoveJamp(player, isDash, jumpPowerToApply, kNormalSpeed, kBoostSpeed, kGravity, kGroundY);
+			float jumpPowerToApply = 0.0f;
+			float moveDistance = 0.0f;
+
+			UpdateKeyActionInput(
+				keys,
+				preKeys,
+				targetKey,
+				player,
+				inputState,
+				jumpParams,
+				isDash,
+				jumpPowerToApply,
+				moveDistance
+			);
+
+			PlayerMoveJamp(
+				player,
+				isDash,
+				jumpPowerToApply,
+				moveDistance,
+				//kNormalSpeed,
+				kBoostSpeed,
+				kGravity,
+				kGroundY
+			);
 			// --- カメラ追従処理 ---
 			CameraMove(camera.pos.x, player.pos.x, screenWidth);
 			///========
