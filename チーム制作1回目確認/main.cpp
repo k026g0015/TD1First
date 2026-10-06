@@ -7,7 +7,7 @@
 #include "player.h"
 #include "scene.h"
 const char kWindowTitle[] = "チーム制作1回目1129班";
-// Windowsアプリでのエントリーポイント(main関数)
+// Windowsアプリでのエントリーポイント(main関数
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #pragma region 画面フルスクリーン
 	// 1. 接続されているモニターの実際の幅と高さを取得
@@ -48,7 +48,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	};
 #pragma endregion
 	int bg = Novice::LoadTexture("./background_tentative.png");
-	const int kBgWidth = 1920; // 画像の横幅（解像度に合わせて数値を変更してください）
+	const int kBgWidth = 1920; // 画像の横幅（解像度に合わせて数値を変更してください
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
 	char preKeys[256] = { 0 };
