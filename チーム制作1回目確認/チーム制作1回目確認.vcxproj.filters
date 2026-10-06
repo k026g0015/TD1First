@@ -23,7 +23,7 @@
     <ClCompile Include="Player.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
-    <ClCompile Include="Function.cpp">
+    <ClCompile Include="Background.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -109,8 +109,7 @@
     <ClInclude Include="C:\KamataEngine\DirectXGame\2d\ImGuiManager.h">
       <Filter>KamataEngine\Include</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="Function.h" />
+    <ClInclude Include="player.h" />
+    <ClInclude Include="scene.h" />
   </ItemGroup>
 </Project>

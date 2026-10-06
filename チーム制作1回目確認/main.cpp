@@ -8,8 +8,12 @@
 #include "scene.h"
 
 const char kWindowTitle[] = "チーム制作1回目1129班";
-// Windowsアプリでのエントリーポイント(main関数)
+// Windowsアプリでのエントリーポイント(main関数
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
+#pragma region ゲームシーン
+	GameScene gameScreen;
+	gameScreen = SCENE_GAME_TITLE;
+#pragma endregion
 #pragma region 画面フルスクリーン
 	// 1. 接続されているモニターの実際の幅と高さを取得
 	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
@@ -23,7 +27,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #pragma endregion
 
 	int bg = Novice::LoadTexture("./background_tentative.png");
-	const int kBgWidth = 1920; // 画像の横幅（解像度に合わせて数値を変更してください）
+	const int kBgWidth = 1920; // 画像の横幅（解像度に合わせて数値を変更してください
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
 	char preKeys[256] = { 0 };
@@ -34,81 +38,198 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// キー入力を受け取る
 		memcpy(preKeys, keys, 256);
 		Novice::GetHitKeyStateAll(keys);
-		///
-		/// ↓更新処理ここから
-		///
-		const int targetKey = DIK_SPACE;
-		// --- 連打・長押しの判定ロジック ---
-		bool isDash = false;
-		float jumpPowerToApply = 0.0f;
-		float moveDistance = 0.0f;
+		switch (gameScreen)
+		{
+#pragma region タイトル
+		case SCENE_GAME_TITLE: {
+			///========
+			///更新処理
+			///========
+#pragma region ゲームシーン切り替え
+			if (!preKeys[DIK_SPACE] && keys[DIK_SPACE]) {
+				gameScreen = SCENE_GAME_STAGE_SELECT;
+			}
+#pragma endregion
 
-		UpdateKeyActionInput(
-			keys,
-			preKeys,
-			targetKey,
-			player,
-			inputState,
-			jumpParams,
-			isDash,
-			jumpPowerToApply,
-			moveDistance
-		);
+			///========
+			///描画処理
+			///========
+			break;
+		}
+#pragma endregion
+#pragma region クレジット
+		case SCENE_GAME_CREDIT: {
+			///========
+			///更新処理
+			///========
+#pragma region ゲームシーン切り替え
+#pragma endregion
 
-		PlayerMoveJamp(
-			player,
-			isDash,
-			jumpPowerToApply,
-			moveDistance,
-			//kNormalSpeed,
-			kBoostSpeed,
-			kGravity,
-			kGroundY
-		);
-		// --- カメラ追従処理 ---
-		CameraMove(camera.pos.x, player.pos.x, screenWidth);
-		///
-		/// ↑更新処理ここまで
-		///
-		///
-		/// ↓描画処理ここから
-		///
+			///========
+			///描画処理
+			///========
+
+			break;
+		}
+#pragma endregion
+#pragma region ステージセレクト
+		case SCENE_GAME_STAGE_SELECT: {
+			///========
+			///更新処理
+			///========
+#pragma region ゲームシーン切り替え
+			if (!preKeys[DIK_1] && keys[DIK_1]) {
+				gameScreen = SCENE_GAME_PLAY_STAGE1;
+			}
+			if (!preKeys[DIK_2] && keys[DIK_2]) {
+				gameScreen = SCENE_GAME_PLAY_STAGE2;
+			}
+			if (!preKeys[DIK_3] && keys[DIK_3]) {
+				gameScreen = SCENE_GAME_PLAY_STAGE3;
+			}
+#pragma endregion
+
+			///========
+			///描画処理
+			///========
+
+			break;
+		}
+#pragma endregion
+#pragma region メニュー
+		case SCENE_GAME_MENU: {
+			///========
+			///更新処理
+			///========
+#pragma region ゲームシーン切り替え
+#pragma endregion
+
+
+			///========
+			///描画処理
+			///========
+
+			break;
+		}
+#pragma endregion
+#pragma region ステージ１
+		case SCENE_GAME_PLAY_STAGE1: {
+			///========
+			///更新処理
+			///========
+			const int targetKey = DIK_SPACE;
+			// --- 連打・長押しの判定ロジック ---
+			bool isDash = false;
+			float jumpPowerToApply = 0.0f;
+			float moveDistance = 0.0f;
+
+			UpdateKeyActionInput(
+				keys,
+				preKeys,
+				targetKey,
+				player,
+				inputState,
+				jumpParams,
+				isDash,
+				jumpPowerToApply,
+				moveDistance
+			);
+
+			PlayerMoveJamp(
+				player,
+				isDash,
+				jumpPowerToApply,
+				moveDistance,
+				//kNormalSpeed,
+				kBoostSpeed,
+				kGravity,
+				kGroundY
+			);
+			// --- カメラ追従処理 ---
+			CameraMove(camera.pos.x, player.pos.x, screenWidth);
+			///========
+			///描画処理
+			///========
 #pragma region 背景・地面の描画（ワールドスクロール）
-			// 背景画像のループスクロール処理
-			// カメラ座標を元にスクロールオフセット（0〜kBgWidth）を計算
-		int camX = static_cast<int>(camera.pos.x);
-		int bgOffsetX = (camX % kBgWidth + kBgWidth % kBgWidth);
-		// 画面を埋めるために2枚並べて描画
-		Novice::DrawSprite(-bgOffsetX, 0, bg, 1.0f, 1.0f, 0.0f, 0xffffffff);
-		Novice::DrawSprite(-bgOffsetX + kBgWidth, 0, bg, 1.0f, 1.0f, 0.0f, 0xffffffff);
-		// 地面ラインの描画（Y = 0 の位置）
-		int screenGroundY = static_cast<int>(kGroundY * -1 + 700);
-		Novice::DrawLine(0, screenGroundY + 100, screenWidth, screenGroundY + 100, 0x888888ff);
+// 背景画像のループスクロール処理
+// カメラ座標を元にスクロールオフセット（0〜kBgWidth）を計算
+			int camX = static_cast<int>(camera.pos.x);
+			int bgOffsetX = (camX % kBgWidth + kBgWidth % kBgWidth);
+			// 画面を埋めるために2枚並べて描画
+			Novice::DrawSprite(-bgOffsetX, 0, bg, 1.0f, 1.0f, 0.0f, 0xffffffff);
+			Novice::DrawSprite(-bgOffsetX + kBgWidth, 0, bg, 1.0f, 1.0f, 0.0f, 0xffffffff);
+			// 地面ラインの描画（Y = 0 の位置）
+			int screenGroundY = static_cast<int>(kGroundY * -1 + 700);
+			Novice::DrawLine(0, screenGroundY + 100, screenWidth, screenGroundY + 100, 0x888888ff);
 #pragma endregion
 #pragma region プレイヤーの描画
-		// ワールド座標からカメラ位置を引いてスクリーン座標を計算
-		int playerScreenX = static_cast<int>(player.pos.x - camera.pos.x);
-		int playerScreenY = static_cast<int>(player.pos.y * -1 + 700);
-		// プレイヤーの色を状態に応じて決定
-		unsigned int playerColor = 0xffffffff; // デフォルト：白
-		if (isDash) {
-			playerColor = 0xff0000ff; // 加速（長押し）中：赤
-		}
-		else if (inputState.tapCount > 0) {
-			playerColor = 0x00ff00ff; // 連打溜め中：緑
-		}
-		Novice::DrawBox(
-			playerScreenX,
-			playerScreenY,
-			100, 100,
-			0.0f,
-			playerColor,
-			kFillModeSolid
-		);
+			// ワールド座標からカメラ位置を引いてスクリーン座標を計算
+			int playerScreenX = static_cast<int>(player.pos.x - camera.pos.x);
+			int playerScreenY = static_cast<int>(player.pos.y * -1 + 700);
+			// プレイヤーの色を状態に応じて決定
+			unsigned int playerColor = 0xffffffff; // デフォルト：白
+			if (isDash) {
+				playerColor = 0xff0000ff; // 加速（長押し）中：赤
+			}
+			else if (inputState.tapCount > 0) {
+				playerColor = 0x00ff00ff; // 連打溜め中：緑
+			}
+			Novice::DrawBox(
+				playerScreenX,
+				playerScreenY,
+				100, 100,
+				0.0f,
+				playerColor,
+				kFillModeSolid
+			);
 #pragma endregion
-		///
-		/// ↑描画処理ここまで
-		///
+
+			break;
+		}
+#pragma endregion
+#pragma region ステージ２
+		case SCENE_GAME_PLAY_STAGE2: {
+			///========
+			///更新処理
+			///========
+
+			///========
+			///描画処理
+			///========
+
+			break;
+		}
+#pragma endregion
+#pragma region ステージ３
+		case SCENE_GAME_PLAY_STAGE3: {
+			///========
+			///更新処理
+			///========
+
+			///========
+			///描画処理
+			///========
+
+			break;
+		}
+#pragma endregion
+#pragma region ステージクリア
+		case SCENE_GAME_CLEAR: {
+			///========
+			///更新処理
+			///========
+#pragma region ゲームシーン切り替え
+#pragma endregion
+
+
+			///========
+			///描画処理
+			///========
+
+			break;
+		}
+#pragma endregion
+		}
 		// フレームの終了
 		Novice::EndFrame();
 		// ESCキーが押されたらループを抜ける
