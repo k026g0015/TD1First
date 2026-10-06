@@ -108,7 +108,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #pragma endregion
 		///
 		/// ↑描画処理ここまで
-		///
+		/// 
 		// フレームの終了
 		Novice::EndFrame();
 		// ESCキーが押されたらループを抜ける
