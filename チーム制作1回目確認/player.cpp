@@ -1,4 +1,9 @@
+#include <Novice.h>
+#include <Windows.h>
 #include <stdio.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <time.h>
 #include "player.h"
 #pragma region カメラ移動
 void CameraMove(float& cameraX, float playerX, int screenWidth) {
