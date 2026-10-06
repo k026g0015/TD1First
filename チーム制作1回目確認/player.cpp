@@ -5,89 +5,198 @@
 #include <math.h>
 #include <time.h>
 #include "player.h"
+
+// プレイヤー
+Player player = {
+	{ 100.0f, 0.0f },
+	{ 0.0f, 0.0f },
+	true,
+	0.0f,
+	false
+};
+
+// カメラ
+Camera camera = {
+	{ 0.0f, 0.0f }
+};
+
+// 移動・重力パラメータ
+const float kNormalSpeed = 0.0f;
+const float kBoostSpeed = 30.0f;
+const float kGravity = 1.2f;
+const float kGroundY = 0.0f;
+
+// 入力状態
+KeyInputState inputState = {
+	0, 0, 0
+};
+
+// ジャンプパラメータ
+JumpParams jumpParams = {
+	16.0f,
+	6.0f,
+	40.0f,
+	12,
+	10
+};
+
+
 #pragma region カメラ移動
+
 void CameraMove(float& cameraX, float playerX, int screenWidth) {
-	// プレイヤーが画面の横中央（画面幅の半分）に来るようにカメラ位置を更新
+
 	cameraX = playerX - static_cast<float>(screenWidth) / 2.0f;
-	// カメラの最低X座標を0にして左端へ戻りすぎないように制限
+
 	if (cameraX < 0.0f) {
 		cameraX = 0.0f;
 	}
 }
-#pragma endregion
-#pragma region プレイヤー移動ジャンプ
-void PlayerMoveJamp(Player& player, bool isDash, float jumpPowerToApply, float normalSpeed, float boostSpeed, float gravity, float groundY) {
-	// スペース長押し中は加速
-	player.velocity.x = isDash ? boostSpeed : normalSpeed;
-	player.pos.x += player.velocity.x;
-	// 計算されたジャンプ力でジャンプ発動
-	if (jumpPowerToApply > 0.0f && player.isGrounded) {
-		player.velocity.y = jumpPowerToApply;
-		player.isGrounded = false;
-	}
-	// 物理演算（重力・落下処理）
-	if (!player.isGrounded) {
-		player.velocity.y -= gravity;
-		player.pos.y += player.velocity.y;
 
-		// 着地判定
-		//【変更】落下中(velocity.y <= 0.0f)のみ着地判定する
-		if (player.velocity.y <= 0.0f && player.pos.y <= groundY) {
-			player.pos.y = groundY;
-			player.velocity.y = 0.0f;
-			player.isGrounded = true;
+#pragma endregion
+
+
+#pragma region プレイヤー移動ジャンプ
+
+void PlayerMoveJamp(
+	Player& p,
+	bool isDash,
+	float jumpPowerToApply,
+	float moveDistance,
+	float boostSpeed,
+	float gravity,
+	float groundY
+) {
+
+	// スペース長押し
+	if (isDash) {
+		p.velocity.x = boostSpeed;
+		p.pos.x += p.velocity.x;
+	}
+
+	// スペース1回押し
+	// 単押しで120px移動開始
+	if (moveDistance > 0.0f && !p.isMoving) {
+		p.moveRemaining = 120.0f;
+		p.isMoving = true;
+	}
+
+	// 120px歩く
+	if (p.isMoving) {
+
+		float moveSpeed = 12.0f;
+
+		if (p.moveRemaining < moveSpeed) {
+			moveSpeed = p.moveRemaining;
+		}
+
+		p.pos.x += moveSpeed;
+		p.moveRemaining -= moveSpeed;
+
+		// 120px移動したら停止
+		if (p.moveRemaining <= 0.0f) {
+			p.moveRemaining = 0.0f;
+			p.isMoving = false;
+		}
+	}
+
+	// ジャンプ
+	if (jumpPowerToApply > 0.0f && p.isGrounded) {
+		p.velocity.y = jumpPowerToApply;
+		p.isGrounded = false;
+	}
+
+	// 重力
+	if (!p.isGrounded) {
+		p.velocity.y -= gravity;
+		p.pos.y += p.velocity.y;
+
+		if (p.velocity.y <= 0.0f && p.pos.y <= groundY) {
+			p.pos.y = groundY;
+			p.velocity.y = 0.0f;
+			p.isGrounded = true;
 		}
 	}
 }
+
 #pragma endregion
+
+
 #pragma region 連打・長押し処理
-void UpdateKeyActionInput(const char* keys, const char* preKeys, int targetKey, const Player& player, KeyInputState& inputState, const JumpParams& jumpParams, bool& isDash, float& jumpPowerToApply
+
+void UpdateKeyActionInput(
+	const char* keys,
+	const char* preKeys,
+	int targetKey,
+	const Player& p,
+	KeyInputState& state,
+	const JumpParams& params,
+	bool& isDash,
+	float& jumpPowerToApply,
+	float& moveDistance
 ) {
+
 	isDash = false;
-	jumpPowerToApply = 0.0f; // 今回発動するジャンプ力を初期化
-	//【追加】配列外参照を防ぐガード処理
+	jumpPowerToApply = 0.0f;
+	moveDistance = 0.0f;
+
 	if (targetKey < 0 || targetKey >= 256) {
 		return;
 	}
-	// 1. スペースキーを押している間の処理（長押し判定）
-	if (keys[targetKey] != 0) {
-		inputState.keyHoldFrames++;
 
-		// 長押し中はダッシュ状態
-		if (inputState.keyHoldFrames >= jumpParams.holdThreshold) {
+	// 長押し
+	if (keys[targetKey] != 0) {
+		state.keyHoldFrames++;
+
+		if (state.keyHoldFrames >= params.holdThreshold) {
 			isDash = true;
 		}
 	}
-	// 2. スペースキーを「押した瞬間」（トリガー）
+
+	// スペースを押した瞬間
 	if (preKeys[targetKey] == 0 && keys[targetKey] != 0) {
-		if (player.isGrounded) {
-			inputState.tapCount++;
-			//【追加】連打数の上限を10回に制限
-			if (inputState.tapCount > 10) {
-				inputState.tapCount = 10;
+
+		if (p.isGrounded) {
+			state.tapCount++;
+
+			if (state.tapCount > 10) {
+				state.tapCount = 10;
 			}
 		}
-		inputState.keyPressInterval = 0; // 入力からの経過時間をリセット
+
+		state.keyPressInterval = 0;
 	}
-	// 3. スペースキーを「離した瞬間」
+
+	// スペースを離した瞬間
 	if (preKeys[targetKey] != 0 && keys[targetKey] == 0) {
-		inputState.keyHoldFrames = 0; // 長押しカウントリセット
+		state.keyHoldFrames = 0;
 	}
-	// 4. スペースキーを離している間の処理（連打確定判定）
+
+	// スペースを押していない
 	if (keys[targetKey] == 0) {
-		inputState.keyPressInterval++;
-		// 制限時間キーが押されなかったら連打確定 ＆ ジャンプ発動
-		if (inputState.keyPressInterval > jumpParams.tapIntervalMax) {
-			// 2回以上連打された場合のみジャンプを発動（単押し tapCount == 1 は無視）
-			if (inputState.tapCount >= 2 && player.isGrounded) {
-				// 連打数に応じたジャンプ力を計算
-				jumpPowerToApply = jumpParams.baseJumpPower + (inputState.tapCount - 1) * jumpParams.jumpAddPower;
-				// 上限制限
-				if (jumpPowerToApply > jumpParams.maxJumpPower) {
-					jumpPowerToApply = jumpParams.maxJumpPower;
+
+		state.keyPressInterval++;
+
+		// 連打判定の時間が終了
+		if (state.keyPressInterval > params.tapIntervalMax) {
+
+			// 1回押し → 120移動
+			if (state.tapCount == 1 && p.isGrounded) {
+				moveDistance = 120.0f;
+			}
+
+			// 2回以上 → ジャンプ
+			else if (state.tapCount >= 2 && p.isGrounded) {
+
+				jumpPowerToApply =
+					params.baseJumpPower +
+					(state.tapCount - 1) * params.jumpAddPower;
+
+				if (jumpPowerToApply > params.maxJumpPower) {
+					jumpPowerToApply = params.maxJumpPower;
 				}
 			}
-			inputState.tapCount = 0; // カウントリセット
+
+			state.tapCount = 0;
 		}
 	}
 }

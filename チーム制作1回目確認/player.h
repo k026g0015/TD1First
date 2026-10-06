@@ -1,38 +1,92 @@
 #pragma once
+
 #pragma region 構造体
+
 struct Vector2 {
 	float x;
 	float y;
 };
+
 struct Size {
 	float width;
 	float height;
 };
-// プレイヤー
+
 struct Player {
-	Vector2 pos;     // 座標 (ワールド座標)
-	Vector2 velocity;// 速度 (x: 移動速度, y: ジャンプ速度)
-	bool isGrounded; // 接地判定
+	Vector2 pos;
+	Vector2 velocity;
+	bool isGrounded;
+
+	float moveRemaining;
+	bool isMoving;
 };
-// カメラ
+
 struct Camera {
-	Vector2 pos;     // 座標 (ワールド座標)
+	Vector2 pos;
 };
-// キー入力判定用の状態変数構造体
+
 struct KeyInputState {
-	int keyHoldFrames;      // キーを押し続けているフレーム数
-	int keyPressInterval;   // キーを離してからのカウントフレーム数
-	int tapCount;           // 連続タップ回数
+	int keyHoldFrames;
+	int keyPressInterval;
+	int tapCount;
 };
-// ジャンプ計算用の固定パラメータ構造体
+
 struct JumpParams {
-	float baseJumpPower; // 基本ジャンプ力
-	float jumpAddPower;  // 1回あたりの追加ジャンプ力
-	float maxJumpPower;  // 最大ジャンプ力
-	int holdThreshold;   // 長押し判定フレーム数
-	int tapIntervalMax;  // 連打許容フレーム数
+	float baseJumpPower;
+	float jumpAddPower;
+	float maxJumpPower;
+	int holdThreshold;
+	int tapIntervalMax;
 };
+
 #pragma endregion
-void CameraMove(float& cameraX, float playerX, int screenWidth);
-void PlayerMoveJamp(Player& player, bool isDash, float jumpPowerToApply, float normalSpeed, float boostSpeed, float gravity, float groundY);
-void UpdateKeyActionInput(const char* keys, const char* preKeys, int targetKey, const Player& player, KeyInputState& inputState, const JumpParams& jumpParams, bool& isDash, float& jumpPowerToApply);
+
+
+#pragma region 関数宣言
+
+void CameraMove(
+	float& cameraX,
+	float playerX,
+	int screenWidth
+);
+
+void PlayerMoveJamp(
+	Player& p,
+	bool isDash,
+	float jumpPowerToApply,
+	float moveDistance,
+	//float normalSpeed,
+	float boostSpeed,
+	float gravity,
+	float groundY
+);
+
+void UpdateKeyActionInput(
+	const char* keys,
+	const char* preKeys,
+	int targetKey,
+	const Player& p,
+	KeyInputState& state,
+	const JumpParams& params,
+	bool& isDash,
+	float& jumpPowerToApply,
+	float& moveDistance
+);
+
+#pragma endregion
+
+
+#pragma region 外部変数
+
+extern Player player;
+extern Camera camera;
+
+extern KeyInputState inputState;
+extern JumpParams jumpParams;
+
+extern const float kNormalSpeed;
+extern const float kBoostSpeed;
+extern const float kGravity;
+extern const float kGroundY;
+
+#pragma endregion
