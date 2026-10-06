@@ -107,5 +107,6 @@
       <Filter>KamataEngine\Include</Filter>
     </ClInclude>
     <ClInclude Include="player.h" />
+    <ClInclude Include="scene.h" />
   </ItemGroup>
 </Project>

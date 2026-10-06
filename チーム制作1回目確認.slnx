@@ -5,5 +5,5 @@
     <BuildType Name="Release" />
     <Platform Name="x64" />
   </Configurations>
-  <Project Path="チーム制作1回目確認/チーム制作1回目確認.vcxproj" />
+  <Project Path="チーム制作1回目確認/チーム制作1回目確認.vcxproj" Id="bab33b46-96bc-473e-b80a-3ca48625323e" />
 </Solution>
