@@ -32,7 +32,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		{ 0.0f, 0.0f }    // カメラの初期座標
 	};
 	// 移動・重力パラメータ
-	const float kNormalSpeed = 12.0f;      // 通常速度
+	const float kNormalSpeed = 6.0f;      // 通常速度
 	const float kBoostSpeed = 25.0f;       // スペース長押し時の加速速度
 	const float kGravity = 1.2f;           // 重力加速度
 	const float kGroundY = 0.0f;           // 地面の高さ
