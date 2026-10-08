@@ -31,11 +31,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//============
 	int bg = Novice::LoadTexture("./background_tentative.png");
 
-	//============
-	//デバック文字
-	//============
-	char title[] = "title tap:SPACE";
-	char stageSelect[] = "stageSelect tap:1 or tap:2 or tap:3";
+	//================================
+	//デバック文字表示用文字とその宣言
+	//================================
+	char titleCharacter[] = "title tap:SPACE";
+	char stageSelectCharacter[] = "stageSelect tap:1 or tap:2 or tap:3";
+
 	const int kBgWidth = 1920; // 画像の横幅（解像度に合わせて数値を変更してください
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
@@ -63,7 +64,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			///========
 			///描画処理
 			///========
-			TestText(title);
+			TestText(titleCharacter);//デバック文字表示
 			break;
 		}
 #pragma endregion
@@ -102,7 +103,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			///========
 			///描画処理
 			///========
-			TestText(stageSelect);
+			TestText(stageSelectCharacter);//デバック文字表示
 
 			break;
 		}
