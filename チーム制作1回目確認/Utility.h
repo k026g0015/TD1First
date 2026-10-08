@@ -1,3 +1,3 @@
 #pragma once
 
-void TestText(char text);
+void TestText(const char* text);
