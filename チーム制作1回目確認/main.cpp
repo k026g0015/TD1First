@@ -6,6 +6,7 @@
 #include <time.h>
 #include "player.h"
 #include "scene.h"
+#include "Utility.h"
 
 const char kWindowTitle[] = "チーム制作1回目1129班";
 // Windowsアプリでのエントリーポイント(main関数
@@ -25,8 +26,16 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE); // ウィンドウ枠を削除
 	SetWindowPos(hwnd, HWND_TOP, 0, 0, screenWidth, screenHeight, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 #pragma endregion
-
+	//============
+	//画像読み込み
+	//============
 	int bg = Novice::LoadTexture("./background_tentative.png");
+
+	//============
+	//デバック文字
+	//============
+	char title[] = "title tap:SPACE";
+	char stageSelect[] = "stageSelect tap:1 or tap:2 or tap:3";
 	const int kBgWidth = 1920; // 画像の横幅（解像度に合わせて数値を変更してください
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
@@ -54,6 +63,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			///========
 			///描画処理
 			///========
+			TestText(title);
 			break;
 		}
 #pragma endregion
@@ -92,6 +102,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			///========
 			///描画処理
 			///========
+			TestText(stageSelect);
 
 			break;
 		}

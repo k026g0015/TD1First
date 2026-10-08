@@ -4,13 +4,14 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <time.h>
+#include "Utility.h"
 
 #pragma region テストテキスト
-void TestText(char text) {
+void TestText(const char* text) {
 	Novice::ScreenPrintf(
 		540,
 		960,
-		"%S", text
+		"%s", text
 	);
 }
 #pragma endregion
