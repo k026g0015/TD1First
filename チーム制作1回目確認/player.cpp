@@ -179,13 +179,8 @@ void UpdateKeyActionInput(
 		// 連打判定の時間が終了
 		if (state.keyPressInterval > params.tapIntervalMax) {
 
-			// 1回押し → 120移動
-			if (state.tapCount == 1 && p.isGrounded) {
-				moveDistance = 120.0f;
-			}
-
 			// 2回以上 → ジャンプ
-			else if (state.tapCount >= 2 && p.isGrounded) {
+			 if (state.tapCount >= 2 && p.isGrounded) {
 
 				jumpPowerToApply =
 					params.baseJumpPower +
